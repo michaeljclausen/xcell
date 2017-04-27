@@ -1,5 +1,5 @@
 const TableModel = require('../table-model');
-const TabelView = require('../table-view');
+const TableView = require('../table-view');
 const fs = require('fs');
 
 describe('table-view', () => {
@@ -11,11 +11,52 @@ describe('table-view', () => {
     document.documentElement.innerHTML = html;
   });
 
+  describe('formula bar', () => {
+    it('makes changes TO the value of the current cell', () => {
+    // set up the initial state
+    const model = new TableModel(3, 3)
+    const view = new TableView(model);
+    view.init();
+
+    // inspect the initial state
+    let trs = document.querySelectorAll('TBODY TR');
+    let td = trs[0].cells[0];
+    expect(td.textContent).toBe('');
+
+    // simulate user action
+    document.querySelector('#formula-bar').value = '65';
+    view.handleFormulaBarChange();
+
+    // inspect the resulting state
+    trs = document.querySelectorAll('TBODY TR');
+    expect(trs[0].cells[0].textContent).toBe('65');
+    });
+
+    it('updates FROM the value of the current cell', () => {
+      //set up initial state
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      model.setValue({col: 2, row: 1}, '123');
+      view.init();
+
+      //inspect initial state
+      const formulaBarEl = document.querySelector('#formula-bar');
+      expect(formulaBarEl.value).toBe('');
+
+      //simulate user action
+      const trs = document.querySelectorAll('TBODY TR');
+      trs[1].cells[2].click();
+
+      //inspect the resulting state
+      expect(formulaBarEl.value).toBe('123');
+    });
+  });
+
   describe('table body', () => {
     it('highlights the current cell when clicked', () => {
       //set up the initial state
       const model = new TableModel(10, 5);
-      const view = new TabelView(model);
+      const view = new TableView(model);
       view.init();
 
       //inspect the initial state
@@ -36,7 +77,7 @@ describe('table-view', () => {
       const numCols = 6;
       const numRows = 10;
       const model = new TableModel(numCols, numRows);
-      const view = new TabelView(model);
+      const view = new TableView(model);
       view.init();
 
       //insepct the initial state
@@ -47,7 +88,7 @@ describe('table-view', () => {
     it('fills in values from the model', () => {
       //set up initial state
       const model = new TableModel(3, 3);
-      const view = new TabelView(model);
+      const view = new TableView(model);
       model.setValue({col: 2, row: 1}, '123');
       view.init();
 
@@ -63,7 +104,7 @@ describe('table-view', () => {
       const numCols = 6;
       const numRows = 10;
       const model = new TableModel(numCols, numRows);
-      const view = new TabelView(model);
+      const view = new TableView(model);
       view.init();
 
       //inspect the initial state
