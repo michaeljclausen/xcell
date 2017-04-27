@@ -11,6 +11,54 @@ describe('table-view', () => {
     document.documentElement.innerHTML = html;
   });
 
+  describe('sum row', () => {
+    it('should display the sum of all column values', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+      document.querySelector('#formula-bar').value = '65';
+      view.handleFormulaBarChange();
+      
+      // inpsect initial state
+      expect(model.getValue({col: 0, row: 0})).toBe('65');
+      
+      // simulate user action
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[1].cells[0];
+      td.click();
+      document.querySelector('#formula-bar').value = '1';
+      view.handleFormulaBarChange();
+
+      // inspect resulting state
+      expect(model.getValue({col: 0, row: 1})).toBe('1');
+      expect(model.getValue({col: 0, row: 2})).toBe(66);
+    });
+
+    it('should add negative values', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+      document.querySelector('#formula-bar').value = '-65';
+      view.handleFormulaBarChange();
+
+      // inpsect initial state
+      expect(model.getValue({col: 0, row: 0})).toBe('-65');
+      
+      // simulate user action
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[1].cells[0];
+      td.click();
+      document.querySelector('#formula-bar').value = '1';
+      view.handleFormulaBarChange();
+
+      // inspect resulting state
+      expect(model.getValue({col: 0, row: 1})).toBe('1');
+      expect(model.getValue({col: 0, row: 2})).toBe(-64);
+    });
+  });
+
   describe('formula bar', () => {
     it('makes changes TO the value of the current cell', () => {
     // set up the initial state
