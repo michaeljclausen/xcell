@@ -55,6 +55,9 @@ class TableView {
     const fragment =  document.createDocumentFragment();
     for (let row = 0; row < this.model.numRows; row += 1) {
       const tr = createTR();
+      if (row === this.model.numRows -1) {
+        tr.className = 'sum-row';
+      }
       for (let col = 0; col < this.model.numCols; col += 1) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
@@ -63,12 +66,26 @@ class TableView {
         if (this.isCurrentCell(col, row)) {
           td.className = 'current-cell';
         }
+
         tr.appendChild(td);
       }
       fragment.appendChild(tr);
     }
     removeChildren(this.sheetBodyEl);
     this.sheetBodyEl.appendChild(fragment);
+
+  }
+  
+  renderColumnSum(col) {
+    let result = 0;
+    for(let i = 0; i < this.model.numRows - 1; i += 1) {
+      let currentCellLocation = { col: col, row: i };
+      if (Number.parseInt(this.model.getValue(currentCellLocation))) {
+        result += Number.parseInt(this.model.getValue(currentCellLocation));
+      }
+    }
+    //alert(result);
+    this.model.setValue({ col: col, row: this.model.numRows - 1 }, result);
   }
 
   attachEventHandlers() {
@@ -81,16 +98,20 @@ class TableView {
   handleFormulaBarChange(evt) {
     const value = this.formulaBarEl.value;
     this.model.setValue(this.currentCellLocation, value);
+    this.renderColumnSum(this.currentCellLocation.col);
     this.renderTableBody();
   }
+
   handleSheetClick(evt) {
     const col = evt.target.cellIndex;
     const row = evt.target.parentElement.rowIndex - 1;
-
-    this.currentCellLocation = { col: col, row: row };
-    this.renderTableBody();
-    this.renderFormulaBar();
+    if (row !== this.model.numRows - 1) {
+      this.currentCellLocation = { col: col, row: row };
+      this.renderTableBody();
+      this.renderFormulaBar();
+    }
   }
+ 
 }
 
 module.exports = TableView;
