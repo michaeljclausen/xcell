@@ -1,5 +1,5 @@
 const { getLetterRange } = require('./array-util');
-const { removeChildren, createTH } = require('./dom-util');
+const { removeChildren, createTH, createTR, createTD } = require('./dom-util');
 
 class TableView {
   constructor(model) {
@@ -13,10 +13,12 @@ class TableView {
 
   initDomReferences() {
     this.headerRowEl = document.querySelector('THEAD TR');
+    this.sheetBodyEl = document.querySelector('TBODY');
   }
 
   renderTable() {
     this.renderTableHeader();
+    this.renderTableBody();
   }
 
   renderTableHeader() {
@@ -24,6 +26,22 @@ class TableView {
     getLetterRange('A', this.model.numCols)
       .map(colLable => createTH(colLable))
       .forEach(th => this.headerRowEl.appendChild(th));
+  }
+
+  renderTableBody() {
+    const fragment =  document.createDocumentFragment();
+    for (let row = 0; row < this.model.numRows; row += 1) {
+      const tr = createTR();
+      for (let col = 0; col < this.model.numCols; col += 1) {
+        const position = {col: col, row: row};
+        const value = this.model.getValue(position);
+        const td = createTD(value);
+        tr.appendChild(td);
+      }
+      fragment.appendChild(tr);
+    }
+    removeChildren(this.sheetBodyEl);
+    this.sheetBodyEl.appendChild(fragment);
   }
 }
 
