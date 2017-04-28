@@ -84,7 +84,6 @@ class TableView {
         result += Number.parseInt(this.model.getValue(currentCellLocation));
       }
     }
-    //alert(result);
     this.model.setValue({ col: col, row: this.model.numRows - 1 }, result);
   }
 
