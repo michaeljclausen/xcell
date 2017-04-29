@@ -53,6 +53,10 @@ class TableView {
         th.className = 'normal-cell';
         this.headerRowEl.appendChild(th)
       });
+
+    th = createTH('+');
+    th.className = 'row-numbers';
+    this.headerRowEl.appendChild(th);
   }
   
   isCurrentCell(col, row) {
@@ -113,6 +117,8 @@ class TableView {
       handleSheetClick.bind(this));
     this.formulaBarEl.addEventListener('keyup', this.
       handleFormulaBarChange.bind(this));
+    this.headerRowEl.addEventListener('click', this.
+      handleHeaderClick.bind(this));
   }
   
   handleFormulaBarChange(evt) {
@@ -136,13 +142,17 @@ class TableView {
     if (row === this.model.numRows) {
       this.addNewRow(row);
     }
+  }
 
-    if (col === this.model.numCols) {
+  handleHeaderClick(evt) {
+    const col = evt.target.cellIndex;
+    if (col === this.model.numCols + 1) {
       this.model.addColumn();
       this.renderTableHeader();
       this.renderTableBody();
     }
   }
+
   addNewRow(row) {
     for (let i = 0; i < this.model.numCols; i += 1) {
         this.model.setValue({ col:i, row: this.model.numRows -1}, '');
