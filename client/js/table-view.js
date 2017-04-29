@@ -64,14 +64,16 @@ class TableView {
            this.currentCellLocation.row === row;
   }
 
-  renderTableBody() {
+  renderTableBody(selectedColumn, selectedRow) {
     const fragment =  document.createDocumentFragment();
     for (let row = 0; row < this.model.numRows ; row += 1) {
       const tr = createTR();
       if (row === this.model.numRows -1) {
         tr.className = 'sum-row';
       }
-      if (row === this.model.numRows) {}
+      if (row === selectedRow) {
+        tr.className = 'selected-row';
+      }
       for (let col = 0; col < this.model.numCols + 1; col += 1) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
@@ -80,8 +82,10 @@ class TableView {
         if (col === 0) {
           td.className = 'row-numbers';
         }
-
-        if (this.isCurrentCell(col, row)) {
+        if (col === selectedColumn) {
+          td.className = 'selected-column';
+        }
+        if (this.isCurrentCell(col, row) && !selectedColumn && !selectedRow) {
           td.className = 'current-cell';
         }
         tr.appendChild(td);
@@ -131,7 +135,8 @@ class TableView {
   handleSheetClick(evt) {
     const col = evt.target.cellIndex;
     const row = evt.target.parentElement.rowIndex - 1;
-    if (col === 0 && row !== this.model.numRows) {
+    if (col === 0 && row < this.model.numRows - 1) {
+      this.renderTableBody(null, row);
       return;
     }
     if (row !== this.model.numRows - 1) {
@@ -150,6 +155,8 @@ class TableView {
       this.model.addColumn();
       this.renderTableHeader();
       this.renderTableBody();
+    } else if (col !== 0) {
+      this.renderTableBody(col);
     }
   }
 
@@ -165,9 +172,7 @@ class TableView {
     }
     this.initCurrentCell();
     this.renderTableBody();
-    
   }
- 
 }
 
 module.exports = TableView;

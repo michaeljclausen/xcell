@@ -27,7 +27,9 @@ td {
 td {
   text-align: right;
 }
-.current-cell {
+.current-cell,
+.selected-row,
+.selected-column {
   background-color: pink;
 }
 
@@ -40,3 +42,4 @@ td {
   max-width: 30px;
   text-align: center;
 }
+
