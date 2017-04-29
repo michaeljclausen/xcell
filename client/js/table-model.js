@@ -3,6 +3,9 @@ class TableModel {
     this.numCols = numCols;
     this.numRows = numRows;
     this.data = {};
+    for (let i = 0; i < numRows - 1; i +=1) {
+      this.setValue({col: 0, row: i}, i + 1);
+    }
   }
 
   _getCellId(location) {
@@ -15,6 +18,12 @@ class TableModel {
 
   setValue(location, value) {
     this.data[this._getCellId(location)] = value;
+  }
+  addColumn() {
+    this.numCols += 1;
+  }
+  addRow() {
+    this.numRows +=1;
   }
 }
 

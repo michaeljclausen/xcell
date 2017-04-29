@@ -20,7 +20,7 @@ class TableView {
   }
   
   initCurrentCell() {
-    this.currentCellLocation = { col: 0, row: 0 };
+    this.currentCellLocation = { col: 1, row: 0 };
     this.renderFormulaBar();
   }
   
@@ -41,9 +41,18 @@ class TableView {
 
   renderTableHeader() {
     removeChildren(this.headerRowEl);
+
+    //add blank column header for row numbers colummn
+    let th = createTH();
+    th.className = 'row-numbers';
+    this.headerRowEl.appendChild(th);
+
     getLetterRange('A', this.model.numCols)
       .map(colLable => createTH(colLable))
-      .forEach(th => this.headerRowEl.appendChild(th));
+      .forEach(th => {
+        th.className = 'normal-cell';
+        this.headerRowEl.appendChild(th)
+      });
   }
   
   isCurrentCell(col, row) {
@@ -53,24 +62,36 @@ class TableView {
 
   renderTableBody() {
     const fragment =  document.createDocumentFragment();
-    for (let row = 0; row < this.model.numRows; row += 1) {
+    for (let row = 0; row < this.model.numRows ; row += 1) {
       const tr = createTR();
       if (row === this.model.numRows -1) {
         tr.className = 'sum-row';
       }
-      for (let col = 0; col < this.model.numCols; col += 1) {
+      if (row === this.model.numRows) {}
+      for (let col = 0; col < this.model.numCols + 1; col += 1) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
         const td = createTD(value);
+        
+        if (col === 0) {
+          td.className = 'row-numbers';
+        }
 
         if (this.isCurrentCell(col, row)) {
           td.className = 'current-cell';
         }
-
         tr.appendChild(td);
       }
       fragment.appendChild(tr);
     }
+    // add '+' cell in new row for 'add a row' functionality
+    const tr = createTR();
+    this.model.setValue({col: 0, row: this.model.numRows + 1}, '+');
+    const td = createTD(this.model.getValue({col: 0, row: this.model.numRows + 1}));
+    td.className = 'row-numbers';
+    tr.appendChild(td);
+    fragment.appendChild(tr);
+
     removeChildren(this.sheetBodyEl);
     this.sheetBodyEl.appendChild(fragment);
 
@@ -104,11 +125,37 @@ class TableView {
   handleSheetClick(evt) {
     const col = evt.target.cellIndex;
     const row = evt.target.parentElement.rowIndex - 1;
+    if (col === 0 && row !== this.model.numRows) {
+      return;
+    }
     if (row !== this.model.numRows - 1) {
       this.currentCellLocation = { col: col, row: row };
       this.renderTableBody();
       this.renderFormulaBar();
     }
+    if (row === this.model.numRows) {
+      this.addNewRow(row);
+    }
+
+    if (col === this.model.numCols) {
+      this.model.addColumn();
+      this.renderTableHeader();
+      this.renderTableBody();
+    }
+  }
+  addNewRow(row) {
+    for (let i = 0; i < this.model.numCols; i += 1) {
+        this.model.setValue({ col:i, row: this.model.numRows -1}, '');
+    }
+    this.model.setValue({col: 0, row: row - 1}, row);
+
+    this.model.addRow();
+    for (let i = 1; i < this.model.numCols; i += 1) {
+      this.renderColumnSum(i);
+    }
+    this.initCurrentCell();
+    this.renderTableBody();
+    
   }
  
 }

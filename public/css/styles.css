@@ -1,7 +1,9 @@
 table {
     border-collapse: collapse;
 }
-
+.row-numbers td, th {
+  max-width: 30px;
+}
 th {
   text-align: center;
   background-color: rgba(158, 158, 158, 0.34);
@@ -15,6 +17,13 @@ td {
 
 }
 
+.normal-cell th, td {
+  border: 1px solid black;
+  min-width: 100px;
+  height: 25px;
+  padding: 3px;
+}
+
 td {
   text-align: right;
 }
@@ -24,5 +33,10 @@ td {
 
 .sum-row {
   background-color: rgba(76, 175, 80, 0.58);
+}
+
+.row-numbers {
+  background-color: rgba(158, 158, 158, 0.34);
+  max-width: 30px;
   text-align: center;
 }
