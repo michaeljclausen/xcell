@@ -3,8 +3,11 @@ class TableModel {
     this.numCols = numCols;
     this.numRows = numRows;
     this.data = {};
-    for (let i = 0; i < numRows - 1; i +=1) {
-      this.setValue({col: 0, row: i}, i + 1);
+    for (let row = 0; row < numRows - 1; row +=1) {
+      this.setValue({col: 0, row: row}, row + 1);
+    }
+    for (let col = 1; col <= numCols; col +=1) {
+      this.setValue({col: col, row: numRows - 1}, '0');
     }
   }
 

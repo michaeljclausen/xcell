@@ -164,9 +164,9 @@ class TableView {
 
     } else if (column === this.model.numCols + 1 && this.selectedColumn){
       this.model.addColumn();
-      for (let col = this.model.numCols; col >= this.selectedColumn; col -= 1) {
+      for (let col = this.model.numCols; col >= this.selectedColumn + 1; col -= 1) {
         for (let row = 0; row < this.model.numRows - 1; row += 1) {
-          if (col > this.selectedColumn) {
+          if (col > this.selectedColumn + 1) {
             let value = this.model.getValue({col: col - 1, row: row});
             this.model.setValue({col: col, row: row}, value);
           } else {
@@ -175,7 +175,7 @@ class TableView {
         }
         this.renderColumnSum(col);
       }
-
+      this.selectedColumn = column;
       this.renderTableHeader();
       this.renderTableBody();
 
