@@ -4,6 +4,8 @@ const { removeChildren, createTH, createTR, createTD } = require('./dom-util');
 class TableView {
   constructor(model) {
     this.model = model;
+    this.selectedRow;
+    this.selectedColumn;
   }
 
   init() {
@@ -109,10 +111,11 @@ class TableView {
     let result = 0;
     for(let i = 0; i < this.model.numRows - 1; i += 1) {
       let currentCellLocation = { col: col, row: i };
-      if (Number.parseInt(this.model.getValue(currentCellLocation))) {
+      if (Number.parseInt(this.model.getValue(currentCellLocation)) || Number.parseInt(this.model.getValue(currentCellLocation)) === 0) {
         result += Number.parseInt(this.model.getValue(currentCellLocation));
       }
     }
+    result = result.toString();
     this.model.setValue({ col: col, row: this.model.numRows - 1 }, result);
   }
 
@@ -137,10 +140,13 @@ class TableView {
     const row = evt.target.parentElement.rowIndex - 1;
     if (col === 0 && row < this.model.numRows - 1) {
       this.renderTableBody(null, row);
+      this.selectedRow = row;
       return;
     }
     if (row !== this.model.numRows - 1) {
       this.currentCellLocation = { col: col, row: row };
+      this.selectedRow = null;
+      this.selectedColumn = null;
       this.renderTableBody();
       this.renderFormulaBar();
     }
@@ -150,13 +156,32 @@ class TableView {
   }
 
   handleHeaderClick(evt) {
-    const col = evt.target.cellIndex;
-    if (col === this.model.numCols + 1) {
+    const column = evt.target.cellIndex;
+    if (column === this.model.numCols + 1 && !this.selectedColumn) {
       this.model.addColumn();
       this.renderTableHeader();
       this.renderTableBody();
-    } else if (col !== 0) {
-      this.renderTableBody(col);
+
+    } else if (column === this.model.numCols + 1 && this.selectedColumn){
+      this.model.addColumn();
+      for (let col = this.model.numCols; col >= this.selectedColumn; col -= 1) {
+        for (let row = 0; row < this.model.numRows - 1; row += 1) {
+          if (col > this.selectedColumn) {
+            let value = this.model.getValue({col: col - 1, row: row});
+            this.model.setValue({col: col, row: row}, value);
+          } else {
+            this.model.setValue({col: col, row: row}, '');
+          }
+        }
+        this.renderColumnSum(col);
+      }
+
+      this.renderTableHeader();
+      this.renderTableBody();
+
+    } else if (column !== 0) {
+      this.renderTableBody(column);
+      this.selectedColumn = column;
     }
   }
 
