@@ -11,6 +11,47 @@ describe('table-view', () => {
     document.documentElement.innerHTML = html;
   });
 
+
+
+  describe('add a row', () => {
+    it('should add a row', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+
+      // inspect initial state
+      expect(model.numRows).toBe(3);
+
+      // simulate user interaction
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[3].cells[0];
+      td.click();
+      
+      // inspect resulting state
+      expect(model.numRows).toBe(4);
+    });
+  });
+  describe('add a column', () => {
+    it('should add a column', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+
+      // inspect initial state
+      expect(model.numCols).toBe(3);
+
+      // simulate user interaction
+      let ths = document.querySelectorAll('THEAD TR');
+      let th = ths[0].cells[4];
+      th.click();
+      
+      // inspect resulting state
+      expect(model.numCols).toBe(4);
+    });
+  });
+
   describe('sum row', () => {
     it('should display the sum of all column values', () => {
       // set up initial state
