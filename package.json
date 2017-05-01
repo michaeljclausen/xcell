@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "build": "mkdir -p public/js; browserify client/js/app.js > public/js/bundle.js",
-    "postinstall": "mkdir -p public/js; browserify client/js/app.js > public/js/bundle.js",
     "watch": "watchify client/js/app.js -o public/js/bundle.js",
     "test": "jest",
     "start": "node index.js"
