@@ -141,9 +141,8 @@ class TableView {
     if (col === 0 && row < this.model.numRows - 1) {
       this.renderTableBody(null, row);
       this.selectedRow = row;
-      return;
     }
-    if (row !== this.model.numRows - 1) {
+    if (col !== 0 && row !== this.model.numRows - 1) {
       this.currentCellLocation = { col: col, row: row };
       this.selectedRow = null;
       this.selectedColumn = null;
@@ -157,12 +156,12 @@ class TableView {
 
   handleHeaderClick(evt) {
     const column = evt.target.cellIndex;
-    if (column === this.model.numCols + 1 && !this.selectedColumn) {
+    if (column === (this.model.numCols + 1) && !this.selectedColumn) {
       this.model.addColumn();
       this.renderTableHeader();
       this.renderTableBody();
 
-    } else if (column === this.model.numCols + 1 && this.selectedColumn){
+    } else if (column === (this.model.numCols + 1) && this.selectedColumn){
       this.model.addColumn();
       for (let col = this.model.numCols; col >= this.selectedColumn + 1; col -= 1) {
         for (let row = 0; row < this.model.numRows - 1; row += 1) {
@@ -175,7 +174,7 @@ class TableView {
         }
         this.renderColumnSum(col);
       }
-      this.selectedColumn = column;
+      this.selectedColumn = null;
       this.renderTableHeader();
       this.renderTableBody();
 
@@ -186,17 +185,36 @@ class TableView {
   }
 
   addNewRow(row) {
-    for (let i = 0; i < this.model.numCols; i += 1) {
-        this.model.setValue({ col:i, row: this.model.numRows -1}, '');
+    if (!this.selectedRow) {
+      for (let i = 0; i <= this.model.numCols; i += 1) {
+          this.model.setValue({ col:i, row: this.model.numRows -1}, '');
+      }
+      this.model.setValue({col: 0, row: row - 1}, row);
+      this.model.addRow();
+      for (let i = 1; i <= this.model.numCols; i += 1) {
+        this.renderColumnSum(i);
+      }
+      this.initCurrentCell();
+      this.renderTableBody();
+    } else {
+      this.model.setValue({col: 0, row: row - 1}, row);
+      this.model.addRow();
+      for (let i = this.model.numRows - 1; i >= this.selectedRow; i -= 1) {
+        for (let col = 1; col <= this.model.numCols; col += 1) {
+          if (i !== this.selectedRow) {
+            let value = this.model.getValue({col: col, row: i});
+            this.model.setValue({col: col, row: i + 1}, value);
+          } else {
+            this.model.setValue({col: col, row: i + 1}, '');
+          }
+        }
+      }
+      for (let i = 1; i <= this.model.numCols; i += 1) {
+        this.renderColumnSum(i);
+      }
+      this.selectedRow = null;
+      this.renderTableBody();
     }
-    this.model.setValue({col: 0, row: row - 1}, row);
-
-    this.model.addRow();
-    for (let i = 1; i < this.model.numCols; i += 1) {
-      this.renderColumnSum(i);
-    }
-    this.initCurrentCell();
-    this.renderTableBody();
   }
 }
 

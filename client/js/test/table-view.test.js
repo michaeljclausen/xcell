@@ -21,18 +21,18 @@ describe('table-view', () => {
       view.handleFormulaBarChange();
       
       // inpsect initial state
-      expect(model.getValue({col: 0, row: 0})).toBe('65');
+      expect(model.getValue({col: 1, row: 0})).toBe('65');
       
       // simulate user action
       let trs = document.querySelectorAll('TBODY TR');
-      let td = trs[1].cells[0];
+      let td = trs[1].cells[1];
       td.click();
       document.querySelector('#formula-bar').value = '1';
       view.handleFormulaBarChange();
 
       // inspect resulting state
-      expect(model.getValue({col: 0, row: 1})).toBe('1');
-      expect(model.getValue({col: 0, row: 2})).toBe(66);
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 1, row: 2})).toBe('66');
     });
 
     it('should add negative values', () => {
@@ -44,18 +44,18 @@ describe('table-view', () => {
       view.handleFormulaBarChange();
 
       // inpsect initial state
-      expect(model.getValue({col: 0, row: 0})).toBe('-65');
+      expect(model.getValue({col: 1, row: 0})).toBe('-65');
       
       // simulate user action
       let trs = document.querySelectorAll('TBODY TR');
-      let td = trs[1].cells[0];
+      let td = trs[1].cells[1];
       td.click();
       document.querySelector('#formula-bar').value = '1';
       view.handleFormulaBarChange();
 
       // inspect resulting state
-      expect(model.getValue({col: 0, row: 1})).toBe('1');
-      expect(model.getValue({col: 0, row: 2})).toBe(-64);
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 1, row: 2})).toBe('-64');
     });
   });
 
@@ -68,7 +68,7 @@ describe('table-view', () => {
 
     // inspect the initial state
     let trs = document.querySelectorAll('TBODY TR');
-    let td = trs[0].cells[0];
+    let td = trs[0].cells[1];
     expect(td.textContent).toBe('');
 
     // simulate user action
@@ -77,7 +77,7 @@ describe('table-view', () => {
 
     // inspect the resulting state
     trs = document.querySelectorAll('TBODY TR');
-    expect(trs[0].cells[0].textContent).toBe('65');
+    expect(trs[0].cells[1].textContent).toBe('65');
     });
 
     it('updates FROM the value of the current cell', () => {
@@ -130,7 +130,7 @@ describe('table-view', () => {
 
       //insepct the initial state
       let ths = document.querySelectorAll('THEAD TH');
-      expect(ths.length).toBe(numCols);
+      expect(ths.length).toBe(numCols + 2);
     });
 
     it('fills in values from the model', () => {
@@ -157,10 +157,10 @@ describe('table-view', () => {
 
       //inspect the initial state
       let ths = document.querySelectorAll('THEAD TH');
-      expect(ths.length).toBe(numCols);
+      expect(ths.length).toBe(numCols + 2);
 
       let lableTexts = Array.from(ths).map(el => el.textContent);
-      expect(lableTexts).toEqual(['A','B','C','D','E','F']);
+      expect(lableTexts).toEqual(['','A','B','C','D','E','F','+']);
     });
   });
 });
