@@ -5,16 +5,15 @@ const fs = require('fs');
 describe('table-view', () => {
 
   beforeEach(() => {
+
     //load HTML skeleton from disk and parse into DOM
     const fixturePath = './client/js/test/fixtures/sheet-container.html';
     const html = fs.readFileSync(fixturePath, 'utf8');
     document.documentElement.innerHTML = html;
   });
 
-
-
   describe('add a row', () => {
-    it('should add a row', () => {
+    it('should add a row when the add row button is clicked', () => {
       // set up initial state
       const model = new TableModel(3,3);
       const view = new TableView(model);
@@ -33,7 +32,7 @@ describe('table-view', () => {
     });
   });
   describe('add a column', () => {
-    it('should add a column', () => {
+    it('should add a column when the add column button is clicked ', () => {
       // set up initial state
       const model = new TableModel(3,3);
       const view = new TableView(model);
@@ -142,6 +141,19 @@ describe('table-view', () => {
   });
 
   describe('table body', () => {
+/*    it('selects the entire row when the row number is clicked', () => {
+      //set up initial state
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+      //simulate user interaction
+      trs = document.querySelectorAll('TBODY TR');
+      td = trs[1].cells[0].click();
+      //inspect resulting state
+      for (col = 0; col <= 3; col++) {
+        expect(trs[1].cells[col].className).toBe('')
+      }
+    });*/
     it('highlights the current cell when clicked', () => {
       //set up the initial state
       const model = new TableModel(10, 5);
@@ -173,7 +185,6 @@ describe('table-view', () => {
       let ths = document.querySelectorAll('THEAD TH');
       expect(ths.length).toBe(numCols + 2);
     });
-
     it('fills in values from the model', () => {
       //set up initial state
       const model = new TableModel(3, 3);
@@ -202,6 +213,23 @@ describe('table-view', () => {
 
       let lableTexts = Array.from(ths).map(el => el.textContent);
       expect(lableTexts).toEqual(['','A','B','C','D','E','F','+']);
+    });
+    it('selects and entire column when the column header is clicked', () => {
+      //set up initial state
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+
+      //simulate user interaction 
+      let ths = document.querySelectorAll('THEAD TR');
+      ths[0].cells[1].click();
+
+      //inspect resulting state
+      let trs = document.querySelectorAll('TBODY TR');
+      for (let row = 1; row < 3; row++) {
+        let td = trs[row].cells[1];
+        expect(td.className).toBe('selected-column');
+      }
     });
   });
 });
