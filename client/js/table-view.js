@@ -186,7 +186,7 @@ class TableView {
   }
 
   addNewRow(row) {
-    if (this.selectedRow === null) {
+    if (this.selectedRow === null || this.selectedRow === undefined) {
       for (let i = 0; i <= this.model.numCols; i++) {
           this.model.setValue({ col:i, row: this.model.numRows -1}, '');
       }

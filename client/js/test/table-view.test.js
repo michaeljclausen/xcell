@@ -30,6 +30,28 @@ describe('table-view', () => {
       // inspect resulting state
       expect(model.numRows).toBe(4);
     });
+    it('should add a row below the selected row when the add row button is clicked', () => {
+      // set up inital state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      model.setValue({col: 1, row: 0}, '1');
+      model.setValue({col: 1, row: 1}, '2');
+      view.init();
+
+      // simulate user interaction
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[0].cells[0];
+      td.click();
+      trs = document.querySelectorAll('TBODY TR');
+      td = trs[3].cells[0];
+      td.click();
+
+      // inspect resulting state
+      expect(model.numRows).toBe(4);
+      expect(model.getValue({col: 1, row:0})).toBe('1');
+      expect(model.getValue({col: 1, row:1})).toBe('');
+      expect(model.getValue({col: 1, row:2})).toBe('2');
+    });
   });
   describe('add a column', () => {
     it('should add a column when the add column button is clicked ', () => {
@@ -47,6 +69,26 @@ describe('table-view', () => {
       th.click();
       
       // inspect resulting state
+      expect(model.numCols).toBe(4);
+    });
+    it('should add a column after the selected column when the add column button is clicked', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      model.setValue({col: 1, row: 1}, '1');
+      model.setValue({col: 2, row: 1}, '2');
+      view.init();
+
+      // simulate user interaction
+      let ths = document.querySelectorAll('THEAD TR');
+      ths[0].cells[1].click();
+      let th = ths[0].cells[4];
+      th.click();
+
+      // inspect resulting state
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 2, row: 1})).toBe('');
+      expect(model.getValue({col: 3, row: 1})).toBe('2');
       expect(model.numCols).toBe(4);
     });
   });
