@@ -68,7 +68,7 @@ class TableView {
 
   renderTableBody(selectedColumn, selectedRow) {
     const fragment =  document.createDocumentFragment();
-    for (let row = 0; row < this.model.numRows ; row += 1) {
+    for (let row = 0; row < this.model.numRows ; row++) {
       const tr = createTR();
       if (row === this.model.numRows -1) {
         tr.className = 'sum-row';
@@ -76,7 +76,7 @@ class TableView {
       if (row === selectedRow) {
         tr.className = 'selected-row';
       }
-      for (let col = 0; col < this.model.numCols + 1; col += 1) {
+      for (let col = 0; col < this.model.numCols + 1; col++) {
         const position = {col: col, row: row};
         const value = this.model.getValue(position);
         const td = createTD(value);
@@ -109,7 +109,7 @@ class TableView {
   
   renderColumnSum(col) {
     let result = 0;
-    for(let i = 0; i < this.model.numRows - 1; i += 1) {
+    for(let i = 0; i < this.model.numRows - 1; i++) {
       let currentCellLocation = { col: col, row: i };
       if (Number.parseInt(this.model.getValue(currentCellLocation)) || Number.parseInt(this.model.getValue(currentCellLocation)) === 0) {
         result += Number.parseInt(this.model.getValue(currentCellLocation));
@@ -163,8 +163,8 @@ class TableView {
 
     } else if (column === (this.model.numCols + 1) && this.selectedColumn){
       this.model.addColumn();
-      for (let col = this.model.numCols; col >= this.selectedColumn + 1; col -= 1) {
-        for (let row = 0; row < this.model.numRows - 1; row += 1) {
+      for (let col = this.model.numCols; col >= this.selectedColumn + 1; col--) {
+        for (let row = 0; row < this.model.numRows - 1; row++) {
           if (col > this.selectedColumn + 1) {
             let value = this.model.getValue({col: col - 1, row: row});
             this.model.setValue({col: col, row: row}, value);
@@ -186,12 +186,12 @@ class TableView {
 
   addNewRow(row) {
     if (!this.selectedRow) {
-      for (let i = 0; i <= this.model.numCols; i += 1) {
+      for (let i = 0; i <= this.model.numCols; i++) {
           this.model.setValue({ col:i, row: this.model.numRows -1}, '');
       }
       this.model.setValue({col: 0, row: row - 1}, row);
       this.model.addRow();
-      for (let i = 1; i <= this.model.numCols; i += 1) {
+      for (let i = 1; i <= this.model.numCols; i++) {
         this.renderColumnSum(i);
       }
       this.initCurrentCell();
@@ -199,8 +199,8 @@ class TableView {
     } else {
       this.model.setValue({col: 0, row: row - 1}, row);
       this.model.addRow();
-      for (let i = this.model.numRows - 1; i >= this.selectedRow; i -= 1) {
-        for (let col = 1; col <= this.model.numCols; col += 1) {
+      for (let i = this.model.numRows - 1; i >= this.selectedRow; i--) {
+        for (let col = 1; col <= this.model.numCols; col++) {
           if (i !== this.selectedRow) {
             let value = this.model.getValue({col: col, row: i});
             this.model.setValue({col: col, row: i + 1}, value);
@@ -209,7 +209,7 @@ class TableView {
           }
         }
       }
-      for (let i = 1; i <= this.model.numCols; i += 1) {
+      for (let i = 1; i <= this.model.numCols; i++) {
         this.renderColumnSum(i);
       }
       this.selectedRow = null;

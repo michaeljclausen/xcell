@@ -3,11 +3,19 @@ class TableModel {
     this.numCols = numCols;
     this.numRows = numRows;
     this.data = {};
-    for (let row = 0; row < numRows - 1; row +=1) {
+    this._createNumberedColumn();
+    this._initSumRow();
+  }
+
+  _createNumberedColumn() {
+    for (let row = 0; row < this.numRows - 1; row++) {
       this.setValue({col: 0, row: row}, row + 1);
     }
-    for (let col = 1; col <= numCols; col +=1) {
-      this.setValue({col: col, row: numRows - 1}, '0');
+  }
+
+  _initSumRow() {
+    for (let col = 1; col <= this.numCols; col++) {
+      this.setValue({col: col, row: this.numRows - 1}, '0');
     }
   }
 
