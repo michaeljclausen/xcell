@@ -5,10 +5,140 @@ const fs = require('fs');
 describe('table-view', () => {
 
   beforeEach(() => {
+
     //load HTML skeleton from disk and parse into DOM
     const fixturePath = './client/js/test/fixtures/sheet-container.html';
     const html = fs.readFileSync(fixturePath, 'utf8');
     document.documentElement.innerHTML = html;
+  });
+
+  describe('add a row', () => {
+    it('should add a row when the add row button is clicked', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+
+      // inspect initial state
+      expect(model.numRows).toBe(3);
+
+      // simulate user interaction
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[3].cells[0];
+      td.click();
+      
+      // inspect resulting state
+      expect(model.numRows).toBe(4);
+    });
+    it('should add a row below the selected row when the add row button is clicked', () => {
+      // set up inital state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      model.setValue({col: 1, row: 0}, '1');
+      model.setValue({col: 1, row: 1}, '2');
+      view.init();
+
+      // simulate user interaction
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[0].cells[0];
+      td.click();
+      trs = document.querySelectorAll('TBODY TR');
+      td = trs[3].cells[0];
+      td.click();
+
+      // inspect resulting state
+      expect(model.numRows).toBe(4);
+      expect(model.getValue({col: 1, row:0})).toBe('1');
+      expect(model.getValue({col: 1, row:1})).toBe('');
+      expect(model.getValue({col: 1, row:2})).toBe('2');
+    });
+  });
+  describe('add a column', () => {
+    it('should add a column when the add column button is clicked ', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+
+      // inspect initial state
+      expect(model.numCols).toBe(3);
+
+      // simulate user interaction
+      let ths = document.querySelectorAll('THEAD TR');
+      let th = ths[0].cells[4];
+      th.click();
+      
+      // inspect resulting state
+      expect(model.numCols).toBe(4);
+    });
+    it('should add a column after the selected column when the add column button is clicked', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      model.setValue({col: 1, row: 1}, '1');
+      model.setValue({col: 2, row: 1}, '2');
+      view.init();
+
+      // simulate user interaction
+      let ths = document.querySelectorAll('THEAD TR');
+      ths[0].cells[1].click();
+      let th = ths[0].cells[4];
+      th.click();
+
+      // inspect resulting state
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 2, row: 1})).toBe('');
+      expect(model.getValue({col: 3, row: 1})).toBe('2');
+      expect(model.numCols).toBe(4);
+    });
+  });
+
+  describe('sum row', () => {
+    it('should display the sum of all column values', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+      document.querySelector('#formula-bar').value = '65';
+      view.handleFormulaBarChange();
+      
+      // inpsect initial state
+      expect(model.getValue({col: 1, row: 0})).toBe('65');
+      
+      // simulate user action
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[1].cells[1];
+      td.click();
+      document.querySelector('#formula-bar').value = '1';
+      view.handleFormulaBarChange();
+
+      // inspect resulting state
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 1, row: 2})).toBe('66');
+    });
+
+    it('should add negative values', () => {
+      // set up initial state
+      const model = new TableModel(3,3);
+      const view = new TableView(model);
+      view.init();
+      document.querySelector('#formula-bar').value = '-65';
+      view.handleFormulaBarChange();
+
+      // inpsect initial state
+      expect(model.getValue({col: 1, row: 0})).toBe('-65');
+      
+      // simulate user action
+      let trs = document.querySelectorAll('TBODY TR');
+      let td = trs[1].cells[1];
+      td.click();
+      document.querySelector('#formula-bar').value = '1';
+      view.handleFormulaBarChange();
+
+      // inspect resulting state
+      expect(model.getValue({col: 1, row: 1})).toBe('1');
+      expect(model.getValue({col: 1, row: 2})).toBe('-64');
+    });
   });
 
   describe('formula bar', () => {
@@ -20,7 +150,7 @@ describe('table-view', () => {
 
     // inspect the initial state
     let trs = document.querySelectorAll('TBODY TR');
-    let td = trs[0].cells[0];
+    let td = trs[0].cells[1];
     expect(td.textContent).toBe('');
 
     // simulate user action
@@ -29,7 +159,7 @@ describe('table-view', () => {
 
     // inspect the resulting state
     trs = document.querySelectorAll('TBODY TR');
-    expect(trs[0].cells[0].textContent).toBe('65');
+    expect(trs[0].cells[1].textContent).toBe('65');
     });
 
     it('updates FROM the value of the current cell', () => {
@@ -53,6 +183,18 @@ describe('table-view', () => {
   });
 
   describe('table body', () => {
+    it('selects the entire row when the row number is clicked', () => {
+      //set up initial state
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+      //simulate user interaction
+      trs = document.querySelectorAll('TBODY TR');
+      td = trs[1].cells[0].click();
+      //inspect resulting state
+      trs = document.querySelectorAll('TBODY TR');
+      expect(trs[1].className).toBe('selected-row');
+    });
     it('highlights the current cell when clicked', () => {
       //set up the initial state
       const model = new TableModel(10, 5);
@@ -82,9 +224,8 @@ describe('table-view', () => {
 
       //insepct the initial state
       let ths = document.querySelectorAll('THEAD TH');
-      expect(ths.length).toBe(numCols);
+      expect(ths.length).toBe(numCols + 2);
     });
-
     it('fills in values from the model', () => {
       //set up initial state
       const model = new TableModel(3, 3);
@@ -109,10 +250,27 @@ describe('table-view', () => {
 
       //inspect the initial state
       let ths = document.querySelectorAll('THEAD TH');
-      expect(ths.length).toBe(numCols);
+      expect(ths.length).toBe(numCols + 2);
 
       let lableTexts = Array.from(ths).map(el => el.textContent);
-      expect(lableTexts).toEqual(['A','B','C','D','E','F']);
+      expect(lableTexts).toEqual(['','A','B','C','D','E','F','+']);
+    });
+    it('selects and entire column when the column header is clicked', () => {
+      //set up initial state
+      const model = new TableModel(3, 3);
+      const view = new TableView(model);
+      view.init();
+
+      //simulate user interaction 
+      let ths = document.querySelectorAll('THEAD TR');
+      ths[0].cells[1].click();
+
+      //inspect resulting state
+      let trs = document.querySelectorAll('TBODY TR');
+      for (let row = 1; row < 3; row++) {
+        let td = trs[row].cells[1];
+        expect(td.className).toBe('selected-column');
+      }
     });
   });
 });
