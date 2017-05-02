@@ -141,7 +141,7 @@ describe('table-view', () => {
   });
 
   describe('table body', () => {
-/*    it('selects the entire row when the row number is clicked', () => {
+    it('selects the entire row when the row number is clicked', () => {
       //set up initial state
       const model = new TableModel(3, 3);
       const view = new TableView(model);
@@ -150,10 +150,9 @@ describe('table-view', () => {
       trs = document.querySelectorAll('TBODY TR');
       td = trs[1].cells[0].click();
       //inspect resulting state
-      for (col = 0; col <= 3; col++) {
-        expect(trs[1].cells[col].className).toBe('')
-      }
-    });*/
+      trs = document.querySelectorAll('TBODY TR');
+      expect(trs[1].className).toBe('selected-row');
+    });
     it('highlights the current cell when clicked', () => {
       //set up the initial state
       const model = new TableModel(10, 5);
