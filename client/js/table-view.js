@@ -139,6 +139,7 @@ class TableView {
     const col = evt.target.cellIndex;
     const row = evt.target.parentElement.rowIndex - 1;
     if (col === 0 && row < this.model.numRows - 1) {
+      this.currentCellLocation = {col: -1, row: -1};
       this.renderTableBody(null, row);
       this.selectedRow = row;
     }
@@ -185,7 +186,7 @@ class TableView {
   }
 
   addNewRow(row) {
-    if (!this.selectedRow) {
+    if (this.selectedRow === null) {
       for (let i = 0; i <= this.model.numCols; i++) {
           this.model.setValue({ col:i, row: this.model.numRows -1}, '');
       }
